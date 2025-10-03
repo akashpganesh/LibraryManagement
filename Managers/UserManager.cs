@@ -34,7 +34,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while registering user {Email}", email);
-                throw new Exception("An error occurred while registering the user. Please try again later.");
+                throw new Exception($"Error occurred while registering the user : {ex.Message}", ex);
             }
         }
 
@@ -74,7 +74,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for {Email}", email);
-                throw new Exception("An error occurred while logging in. Please try again later.");
+                throw new Exception($"Error occurred while logging in : {ex.Message}", ex);
             }
         }
 
@@ -98,7 +98,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while fetching all users");
-                throw new Exception("An error occurred while fetching users. Please try again later.");
+                throw new Exception($"Error occurred while fetching users : {ex.Message}", ex);
             }
         }
 
@@ -125,7 +125,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching user with ID {UserId}", userId);
-                throw new Exception("An error occurred while fetching the user. Please try again later.");
+                throw new Exception($"Error occurred while fetching the user : {ex.Message}", ex);
             }
         }
 
@@ -143,14 +143,10 @@ namespace LibraryManagemant.Managers
                 _logger.LogWarning(ex, "Validation error while updating user profile {UserId}", userId);
                 throw;
             }
-            catch (Exception ex) when (ex.Message.Contains("Email already exist"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating user profile {UserId}", userId);
-                throw new Exception("An error occurred while updating the user profile. Please try again later.");
+                throw new Exception($"Error occurred while updating the user profile : {ex.Message}", ex);
             }
         }
 
@@ -168,14 +164,10 @@ namespace LibraryManagemant.Managers
                 _logger.LogWarning(ex, "Validation error while changing password for {UserId}", userId);
                 throw;
             }
-            catch (Exception ex) when (ex.Message.Contains("Old Password is Incorrect"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error changing password for user {UserId}", userId);
-                throw new Exception("An error occurred while changing the password. Please try again later.");
+                throw new Exception($"Error occurred while changing the password : {ex.Message}",ex);
             }
         }
 
@@ -185,14 +177,10 @@ namespace LibraryManagemant.Managers
             {
                 await _userRepo.DeleteUser(userId);
             }
-            catch (Exception ex) when (ex.Message.Contains("User not found"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting user with ID {UserId}", userId);
-                throw new Exception("An error occurred while deleting the user. Please try again later.");
+                throw new Exception($"Error occurred while deleting the user : {ex.Message}",ex);
             }
         }
     }

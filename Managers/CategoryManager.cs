@@ -28,14 +28,10 @@ namespace LibraryManagemant.Managers
                 _logger.LogWarning(ex, "Validation failed while adding category");
                 throw;
             }
-            catch (Exception ex) when (ex.Message.Contains("Category already exists"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding category {CategoryName}", request.Name);
-                throw new Exception("An error occurred while adding the category. Please try again later.");
+                throw new Exception($"Error occurred while adding the category : {ex.Message}", ex);
             }
         }
 
@@ -55,15 +51,8 @@ namespace LibraryManagemant.Managers
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("Category not found") || ex.Message.Contains("Category already exists"))
-                {
-                    throw;
-                }
-                else
-                {
-                    _logger.LogError(ex, "Error occurred while updating category {CategoryId}", id);
-                    throw new Exception("An error occurred while updating the category. Please try again later.");
-                }
+                _logger.LogError(ex, "Error occurred while updating category {CategoryId}", id);
+                throw new Exception($"Error occurred while updating the category : {ex.Message}", ex);
             }
         }
 
@@ -73,14 +62,10 @@ namespace LibraryManagemant.Managers
             {
                 await _categoryRepo.DeleteCategory(id);
             }
-            catch (Exception ex) when (ex.Message.Contains("Category not found"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while deleting category {CategoryId}", id);
-                throw new Exception("An error occurred while deleting the category. Please try again later.");
+                throw new Exception($"Error occurred while deleting the category : {ex.Message}", ex);
             }
         }
 
@@ -93,7 +78,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching all categories");
-                throw new Exception("An error occurred while fetching categories. Please try again later.");
+                throw new Exception($"Error occurred while fetching categories : {ex.Message}", ex);
             }
         }
     }

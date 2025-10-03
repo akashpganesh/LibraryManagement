@@ -31,7 +31,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding Author {AuthorName}", request.Name);
-                throw new Exception("An error occurred while adding the Author. Please try again later.");
+                throw new Exception($"Error occurred while adding the Author : {ex.Message}", ex);
             }
         }
 
@@ -49,14 +49,10 @@ namespace LibraryManagemant.Managers
                 _logger.LogWarning(ex, "Validation failed while updating Author {AuthorId}", id);
                 throw;
             }
-            catch (Exception ex) when (ex.Message.Contains("Author not found"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating Author {AuthorId}", id);
-                throw new Exception("An error occurred while updating the Author. Please try again later.");
+                throw new Exception($"An error occurred while updating the Author : {ex.Message}", ex);
             }
         }
 
@@ -66,14 +62,10 @@ namespace LibraryManagemant.Managers
             {
                 await _AuthorRepo.DeleteAuthor(id);
             }
-            catch (Exception ex) when (ex.Message.Contains("Author not found"))
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while deleting Author {AuthorId}", id);
-                throw new Exception("An error occurred while deleting the Author. Please try again later.");
+                throw new Exception($"Error occurred while deleting the Author : {ex.Message}", ex);
             }
         }
 
@@ -86,7 +78,7 @@ namespace LibraryManagemant.Managers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching all Authors");
-                throw new Exception("An error occurred while fetching Authors. Please try again later.");
+                throw new Exception($"Error occurred while fetching Authors : {ex.Message}", ex);
             }
         }
     }

@@ -2,6 +2,7 @@
 using LibraryManagemant.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Context;
 
 namespace LibraryManagemant.Controllers
 {
@@ -20,23 +21,27 @@ namespace LibraryManagemant.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddAuthor([FromBody] AuthorRequest request)
         {
-            try
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (LogContext.PushProperty("CorrelationId", correlationId))
             {
-                await _AuthorManager.AddAuthorAsync(request);
-
-                return Ok(new { Message = "Author added successfully" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
+                try
                 {
-                    Message = "An error occurred while adding the Author",
-                    Details = ex.Message
-                });
+                    await _AuthorManager.AddAuthorAsync(request);
+                    return Ok(new { Message = "Author added successfully", CorrelationId = correlationId });
+                }
+                catch (ArgumentException ex)
+                {
+                    return BadRequest(new { Message = ex.Message, CorrelationId = correlationId });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while adding the Author",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
             }
         }
 
@@ -44,26 +49,31 @@ namespace LibraryManagemant.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorRequest request)
         {
-            try
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (LogContext.PushProperty("CorrelationId", correlationId))
             {
-                await _AuthorManager.UpdateAuthorAsync(id, request);
-                return Ok(new { Message = "Author updated successfully" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-            catch (Exception ex) when (ex.Message.Contains("Author not found"))
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
+                try
                 {
-                    Message = "An error occurred while updating the Author",
-                    Details = ex.Message
-                });
+                    await _AuthorManager.UpdateAuthorAsync(id, request);
+                    return Ok(new { Message = "Author updated successfully", CorrelationId = correlationId });
+                }
+                catch (ArgumentException ex)
+                {
+                    return BadRequest(new { Message = ex.Message, CorrelationId = correlationId });
+                }
+                catch (Exception ex) when (ex.Message.Contains("Author not found"))
+                {
+                    return NotFound(new { Message = ex.Message, CorrelationId = correlationId });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while updating the Author",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
             }
         }
 
@@ -71,22 +81,27 @@ namespace LibraryManagemant.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
-            try
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (LogContext.PushProperty("CorrelationId", correlationId))
             {
-                await _AuthorManager.DeleteAuthorAsync(id);
-                return Ok(new { Message = "Author deleted successfully" });
-            }
-            catch (Exception ex) when (ex.Message.Contains("Author not found"))
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
+                try
                 {
-                    Message = "An error occurred while deleting the Author",
-                    Details = ex.Message
-                });
+                    await _AuthorManager.DeleteAuthorAsync(id);
+                    return Ok(new { Message = "Author deleted successfully", CorrelationId = correlationId });
+                }
+                catch (Exception ex) when (ex.Message.Contains("Author not found"))
+                {
+                    return NotFound(new { Message = ex.Message, CorrelationId = correlationId });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while deleting the Author",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
             }
         }
 
@@ -94,23 +109,28 @@ namespace LibraryManagemant.Controllers
         [Authorize]
         public async Task<IActionResult> GetAllAuthors()
         {
-            try
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (LogContext.PushProperty("CorrelationId", correlationId))
             {
-                var Authors = await _AuthorManager.GetAllAuthorsAsync();
-
-                return Ok(new
+                try
                 {
-                    Message = "Authors retrieved successfully",
-                    Data = Authors
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
+                    var Authors = await _AuthorManager.GetAllAuthorsAsync();
+                    return Ok(new
+                    {
+                        Message = "Authors retrieved successfully",
+                        Data = Authors,
+                        CorrelationId = correlationId
+                    });
+                }
+                catch (Exception ex)
                 {
-                    Message = "An error occurred while retrieving Authors",
-                    Details = ex.Message
-                });
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while retrieving Authors",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
             }
         }
     }
