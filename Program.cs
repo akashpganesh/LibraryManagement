@@ -25,6 +25,8 @@ builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthorManager, AuthorManager>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookManager, BookManager>();
+builder.Services.AddScoped<IBorrowBookRepository, BorrowBookRepository>();
+builder.Services.AddScoped<IBorrowBookManager, BorrowBookManager>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
