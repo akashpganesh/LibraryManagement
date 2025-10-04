@@ -10,5 +10,7 @@ namespace LibraryManagemant.Managers
         Task AddStockAsync(int bookId, int quantity);
         Task DeleteBookAsync(int bookId);
         Task<BookResponse> GetBookByIdAsync(int bookId);
+        Task<IEnumerable<BookResponse>> SearchBooksAsync(string searchText);
+        Task<IEnumerable<BookResponse>> FilterBooksAsync(int? authorId, int? categoryId);
     }
 }

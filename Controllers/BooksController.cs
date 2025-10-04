@@ -172,7 +172,7 @@ namespace LibraryManagemant.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize] // Admin & Users can access
+        [Authorize]
         public async Task<IActionResult> GetBookById(int id)
         {
             var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
@@ -196,5 +196,62 @@ namespace LibraryManagemant.Controllers
                 }
             }
         }
+
+        [HttpGet("search")]
+        [Authorize]
+        public async Task<IActionResult> SearchBooks([FromQuery] string? searchText)
+        {
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (LogContext.PushProperty("CorrelationId", correlationId))
+            {
+                try
+                {
+                    var books = await _bookManager.SearchBooksAsync(searchText);
+
+                    if (books == null || !books.Any())
+                        return NotFound(new { Message = "No books found matching the search criteria.", CorrelationId = correlationId });
+
+                    return Ok(new { Message = "Books retrieved successfully", Data = books, CorrelationId = correlationId });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while searching books",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
+            }
+        }
+
+        [HttpGet("filter")]
+        [Authorize] // Both Admin & Users can filter
+        public async Task<IActionResult> FilterBooks([FromQuery] int? authorId, [FromQuery] int? categoryId)
+        {
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? "N/A";
+            using (Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId))
+            {
+                try
+                {
+                    var books = await _bookManager.FilterBooksAsync(authorId, categoryId);
+
+                    if (books == null || !books.Any())
+                        return NotFound(new { Message = "No books found for the selected filters.", CorrelationId = correlationId });
+
+                    return Ok(new { Message = "Books retrieved successfully", Data = books, CorrelationId = correlationId });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new
+                    {
+                        Message = "An error occurred while filtering books",
+                        Details = ex.Message,
+                        CorrelationId = correlationId
+                    });
+                }
+            }
+        }
+
     }
 }

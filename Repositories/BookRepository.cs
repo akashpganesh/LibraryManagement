@@ -157,5 +157,49 @@ namespace LibraryManagemant.Repositories
                 throw new Exception($"Database error while fetching book: {ex.Message}", ex);
             }
         }
+
+        public async Task<IEnumerable<BookResponse>> SearchBooks(string searchText)
+        {
+            try
+            {
+                using IDbConnection db = new SqlConnection(_connectionString);
+
+                return await db.QueryAsync<BookResponse>(
+                    "sp_SearchBooks",
+                    new { SearchText = searchText },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Database error occurred while searching books: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error while searching books: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<IEnumerable<BookResponse>> FilterBooks(int? authorId, int? categoryId)
+        {
+            try
+            {
+                using IDbConnection db = new SqlConnection(_connectionString);
+
+                return await db.QueryAsync<BookResponse>(
+                    "sp_FilterBooks",
+                    new { AuthorId = authorId, CategoryId = categoryId },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Database error occurred while filtering books: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error while filtering books: {ex.Message}", ex);
+            }
+        }
     }
 }

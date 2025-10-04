@@ -185,5 +185,26 @@ namespace LibraryManagemant.Repositories
             }
         }
 
+        public async Task<IEnumerable<BookResponse>> SearchBooks(string searchText)
+        {
+            try
+            {
+                using IDbConnection db = new SqlConnection(_connectionString);
+
+                return await db.QueryAsync<BookResponse>(
+                    "sp_SearchBooks",
+                    new { SearchText = searchText },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Database error occurred while searching books: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error while searching books: {ex.Message}", ex);
+            }
+        }
     }
 }

@@ -127,5 +127,32 @@ namespace LibraryManagemant.Managers
                 throw;
             }
         }
+
+        public async Task<IEnumerable<BookResponse>> SearchBooksAsync(string searchText)
+        {
+            try
+            {
+                return await _bookRepo.SearchBooks(searchText);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while searching books with text: {SearchText}", searchText);
+                throw new Exception($"Error occurred while searching books: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<IEnumerable<BookResponse>> FilterBooksAsync(int? authorId, int? categoryId)
+        {
+            try
+            {
+                return await _bookRepo.FilterBooks(authorId, categoryId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while filtering books with AuthorId={AuthorId}, CategoryId={CategoryId}",
+                    authorId, categoryId);
+                throw;
+            }
+        }
     }
 }
