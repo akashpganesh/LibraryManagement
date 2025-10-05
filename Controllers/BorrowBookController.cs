@@ -1,6 +1,7 @@
 ﻿using LibraryManagemant.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryManagemant.Controllers
 {
@@ -77,7 +78,7 @@ namespace LibraryManagemant.Controllers
                 try
                 {
                     var currentUserId = int.Parse(User.FindFirst("UserId")?.Value);
-                    var currentUserRole = User.FindFirst("Role")?.Value;
+                    var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                     // If Admin => get all borrowed books, otherwise filter by logged-in user
                     int? userId = currentUserRole == "Admin" ? null : currentUserId;
@@ -119,7 +120,7 @@ namespace LibraryManagemant.Controllers
                         return BadRequest(new { Message = "Invalid BorrowId", CorrelationId = correlationId });
 
                     var currentUserId = int.Parse(User.FindFirst("UserId")?.Value);
-                    var currentUserRole = User.FindFirst("Role")?.Value;
+                    var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                     var borrowedBook = await _borrowBookManager.GetBorrowedBookByIdAsync(borrowId);
 
