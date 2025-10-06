@@ -54,8 +54,19 @@ namespace LibraryManagemant.Controllers
             {
                 try
                 {
-                    var fine = await _borrowBookManager.ReturnBookAsync(borrowId);
+                    var userId = int.Parse(User.FindFirst("UserId")?.Value);
+                    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                    var fine = await _borrowBookManager.ReturnBookAsync(borrowId, userId, role);
                     return Ok(new { Message = "Book returned successfully.", FineAmount = fine, CorrelationId = correlationId });
+                }
+                catch (Exception ex) when (ex.Message.Contains("Not authorized"))
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, new
+                    {
+                        Message = ex.Message,
+                        CorrelationId = correlationId
+                    });
                 }
                 catch (Exception ex) when (ex.Message.Contains("Borrow record not found"))
                 {

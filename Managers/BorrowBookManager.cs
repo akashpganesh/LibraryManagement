@@ -27,11 +27,11 @@ namespace LibraryManagemant.Managers
             }
         }
 
-        public async Task<decimal> ReturnBookAsync(int borrowId)
+        public async Task<decimal> ReturnBookAsync(int borrowId, int userId, string role)
         {
             try
             {
-                return await _borrowBookRepo.ReturnBookAsync(borrowId);
+                return await _borrowBookRepo.ReturnBookAsync(borrowId, userId, role);
             }
             catch (Exception ex)
             {

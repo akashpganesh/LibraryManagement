@@ -35,13 +35,15 @@ namespace LibraryManagemant.Repositories
             }
         }
 
-        public async Task<decimal> ReturnBookAsync(int borrowId)
+        public async Task<decimal> ReturnBookAsync(int borrowId, int userId, string role)
         {
             try
             {
                 using IDbConnection db = new SqlConnection(_connectionString);
                 var parameters = new DynamicParameters();
                 parameters.Add("@BorrowId", borrowId);
+                parameters.Add("@UserId", userId);
+                parameters.Add("@Role", role);
                 parameters.Add("@Fine", dbType: DbType.Decimal, direction: ParameterDirection.Output);
 
                 await db.ExecuteAsync("sp_ReturnBook", parameters, commandType: CommandType.StoredProcedure);
